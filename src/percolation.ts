@@ -2,13 +2,13 @@ import { WeightedQuickUnionPathCompressionUF } from "./quick-union";
 import { getRandomInt } from "./utils";
 
 export class Percolation {
-  uf: WeightedQuickUnionPathCompressionUF;
-  opened: boolean[] = [];
-  openedCount = 0;
-  n: number;
-  size: number;
-  topVertex: number;
-  bottomVertex: number;
+  private uf: WeightedQuickUnionPathCompressionUF;
+  private opened: boolean[] = [];
+  private openedCount = 0;
+  private n: number;
+  private size: number;
+  private topVertex: number;
+  private bottomVertex: number;
 
   // creates n-by-n grid, with all sites initially blocked
   constructor(n: number) {
@@ -28,11 +28,11 @@ export class Percolation {
   }
 
   // opens the site (row, col) if it is not open already
-  open(row: number, col: number) {
+  open(row: number, col: number): number[] {
     if (this.isOpen(row, col)) {
       const r = getRandomInt(1, this.n);
       const c = getRandomInt(1, this.n);
-      this.open(r, c);
+      return this.open(r, c);
     }
     else { 
       const index = this.getIndex(row, col);
@@ -49,11 +49,28 @@ export class Percolation {
       const openedNeighbors = this.getNeighborsIndexes(row, col).filter(i => this.opened[i]);
       // Connect current site with opened neighbors
       openedNeighbors.forEach(site => this.uf.union(index, site));
+      return [row, col];
     }
   }
  
+  // is the site (row, col) into the tree that percolates?
+  isFull(row: number, col: number): boolean {
+    const index = this.getIndex(row, col);
+    return this.uf.connected(index, this.topVertex);
+  }
+
+  // returns the number of open sites
+  getNumberOfOpenSites(): number {
+    return this.openedCount;
+  }
+
+  // does the system percolate?
+  percolates(): boolean {
+    return this.uf.connected(this.topVertex, this.bottomVertex);
+  }
+
   // The site can have min 2 and max 4 neighbors
-  getNeighborsIndexes(row: number, col: number) {
+  private getNeighborsIndexes(row: number, col: number): number[] {
     const size = this.n * this.n;
     // First condition for every element in the array to skip side points
     return [
@@ -64,28 +81,12 @@ export class Percolation {
     ].filter(v => v > 0 && v <= size);
   }
 
-  getIndex(row: number, col: number): number {
+  private getIndex(row: number, col: number): number {
     return this.n * (row - 1) + col;
   }
 
   // is the site (row, col) open?
-  isOpen(row: number, col: number): boolean {
+  private isOpen(row: number, col: number): boolean {
     return this.opened[this.getIndex(row, col)];
-  }
-
-  // is the site (row, col) into the tree that percolates?
-  isFull(row: number, col: number) {
-    const index = this.getIndex(row, col);
-    return this.uf.connected(index, this.topVertex);
-  }
-
-  // returns the number of open sites
-  numberOfOpenSites() {
-    return this.openedCount;
-  }
-
-  // does the system percolate?
-  percolates(){
-    return this.uf.connected(this.topVertex, this.bottomVertex);
   }
 }

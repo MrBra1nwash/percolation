@@ -1,6 +1,6 @@
 export class WeightedQuickUnionPathCompressionUF {
-  sites: number[] = [];
-  size: number[] = []; // This array to track length of the trees to avoid union longer tree in shorter. size[i] = number of sites in subtree rooted at i
+  private sites: number[] = [];
+  private size: number[] = []; // This array to track length of the trees to avoid union longer tree in shorter. size[i] = number of sites in subtree rooted at i
 
   constructor(n: number) {
     for (let i = 0; i < n; i++) {
@@ -28,7 +28,7 @@ export class WeightedQuickUnionPathCompressionUF {
     }
   }
 
-  findRoot(p: number) {
+  private findRoot(p: number) {
     while (p !== this.sites[p]) {
       this.sites[p] = this.sites[this.sites[p]];
       p = this.sites[p]
