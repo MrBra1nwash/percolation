@@ -4,8 +4,8 @@ const TSLintPlugin = require('tslint-webpack-plugin');
 module.exports = {
     entry: path.join(__dirname, '/src/index.ts'),
     output: {
-        filename: 'main.js',
-        path: __dirname + 'dist'
+        filename: './main.js',
+        path: __dirname
     },
     module: {
         rules: [
